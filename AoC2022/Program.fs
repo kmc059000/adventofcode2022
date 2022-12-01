@@ -3,3 +3,6 @@ open Day01
 
 solveDay0101
 solveDay0102
+
+solveDay0101Variant
+solveDay0102Variant
