@@ -7,5 +7,5 @@
 // solveDay0102Variant
 
 open Day02
-solveDay0201
-//solveDay0202
+//solveDay0201
+solveDay0202

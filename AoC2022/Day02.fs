@@ -60,3 +60,43 @@ let totalScore (str : string) =
     |> Array.sum
     
 let solveDay0201 = printfn $"%i{totalScore day0201}"
+
+
+
+
+let parseCorrectHand (str : String) =
+    let tokens = str.Split(" ")
+    let opponent = match tokens[0] with
+                   | "A" -> Rock
+                   | "B" -> Paper
+                   | "C" -> Scissors
+                   | _ -> failwithf $"Could not read hand %s{tokens[0]}"
+    let me = match tokens[1] with
+             | "X" -> Lose
+             | "Y" -> Tie
+             | "Z" -> Win
+             | _ -> failwithf $"Could not read hand %s{tokens[0]}"
+    (opponent, me)
+
+let chooseHand opponent me =
+    match opponent, me with
+    | (_, Tie) -> Tie,opponent
+    | (Rock, Win) -> Win,Paper
+    | (Rock, Lose) -> Lose,Scissors
+    | (Paper, Win) -> Win,Scissors
+    | (Paper, Lose) -> Lose,Rock
+    | (Scissors, Win) -> Win,Rock
+    | (Scissors, Lose) -> Lose,Paper    
+
+let parseHands2 (str: string) =
+    str.Split("\n", StringSplitOptions.RemoveEmptyEntries)
+    |> Array.map parseCorrectHand
+    
+let totalScore2 (str : string) =
+    str
+    |> parseHands2 
+    |> Array.map (fun (opp,me) -> chooseHand opp me)
+    |> Array.map score
+    |> Array.sum
+    
+let solveDay0202 = printfn $"%i{totalScore2 day0201}"
