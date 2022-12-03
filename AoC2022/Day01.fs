@@ -35,10 +35,9 @@ let solveDay0102 =
 let elves2 =
     let parseElf (str : String) =
         str.Split("\n", StringSplitOptions.RemoveEmptyEntries)
-        |> Array.map parseInt
-        |> Array.toSeq
+        |> Seq.map parseInt
     day01_01.Split("\n\n", StringSplitOptions.RemoveEmptyEntries)
-    |> Array.map parseElf
-    |> Array.map Seq.sum
+    |> Seq.map parseElf
+    |> Seq.map Seq.sum
 let solveDay0101Variant = elves2 |> Seq.max |> printfn "%i"
 let solveDay0102Variant = elves2 |> Seq.sortDescending |> Seq.take 3 |> Seq.sum |> printfn "%i"

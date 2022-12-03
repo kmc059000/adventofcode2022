@@ -51,13 +51,13 @@ let parseHand (str : String) =
 
 let hands (str: string) =
     str.Split("\n", StringSplitOptions.RemoveEmptyEntries)
-    |> Array.map parseHand
+    |> Seq.map parseHand
     
 let totalScore (str : string) =
     hands str
-    |> Array.map (fun (opp,me) -> whoWon opp me)
-    |> Array.map score
-    |> Array.sum
+    |> Seq.map (fun (opp,me) -> whoWon opp me)
+    |> Seq.map score
+    |> Seq.sum
     
 let solveDay0201 = printfn $"%i{totalScore day0201}"
 
@@ -90,13 +90,13 @@ let chooseHand opponent me =
 
 let parseHands2 (str: string) =
     str.Split("\n", StringSplitOptions.RemoveEmptyEntries)
-    |> Array.map parseCorrectHand
+    |> Seq.map parseCorrectHand
     
 let totalScore2 (str : string) =
     str
     |> parseHands2 
-    |> Array.map (fun (opp,me) -> chooseHand opp me)
-    |> Array.map score
-    |> Array.sum
+    |> Seq.map (fun (opp,me) -> chooseHand opp me)
+    |> Seq.map score
+    |> Seq.sum
     
 let solveDay0202 = printfn $"%i{totalScore2 day0201}"
