@@ -6,6 +6,10 @@
 // solveDay0101Variant
 // solveDay0102Variant
 
-open Day02
+//open Day02
 //solveDay0201
-solveDay0202
+//solveDay0202
+
+open Day03
+solveDay0301
+solveDay0302
