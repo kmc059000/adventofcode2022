@@ -1,5 +1,9 @@
 module AoC2022.Inputs
 
+open System
+
+let splitInputByNewLines (str : string) = str.Split("\n", StringSplitOptions.RemoveEmptyEntries)
+
 let day01_01 = "
 3120
 4127
