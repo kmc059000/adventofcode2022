@@ -17,11 +17,11 @@ let findStart (len : int) (str : String) =
         | _ -> failwith "todo"
         ) (None, 0) str |> snd
 
-let betterFindStart (len : int) (str : string) =
-    let startIdx = str.ToCharArray()
-                   |> Seq.windowed len
-                   |> Seq.findIndex (fun x -> len = (x |> Seq.distinct |> Seq.length))
-    startIdx + len
+let betterFindStart len str =
+    str
+    |> Seq.windowed len
+    |> Seq.findIndex (Seq.distinct >> Seq.length >> (=) len)
+    |> (+) len
 
 let problem1 = betterFindStart 4
 
