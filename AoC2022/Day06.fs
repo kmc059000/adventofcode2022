@@ -17,7 +17,13 @@ let findStart (len : int) (str : String) =
         | _ -> failwith "todo"
         ) (None, 0) str |> snd
 
-let problem1 = findStart 4
+let betterFindStart (len : int) (str : string) =
+    let startIdx = str.ToCharArray()
+                   |> Seq.windowed len
+                   |> Seq.findIndex (fun x -> len = (x |> Seq.distinct |> Seq.length))
+    startIdx + len
+
+let problem1 = betterFindStart 4
 
 let a1samples =
     day0601sample
@@ -28,7 +34,7 @@ let a1 = problem1 day0601
 
 let solveDay0601 = printfn $"{a1samples} {a1}"
 
-let problem2 = findStart 14
+let problem2 = betterFindStart 14
 
 let a2samples =
     day0601sample
