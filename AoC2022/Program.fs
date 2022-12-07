@@ -27,5 +27,5 @@
 // solveDay0602
 
 open Day07
-solve1
-solve2
+print1
+print2

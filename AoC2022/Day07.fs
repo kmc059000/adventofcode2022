@@ -1,141 +1,65 @@
 ﻿module Day07
 
-open System
-open System.Collections.Generic
 open AoC2022.Inputs.Day07
 open Utils
 
-// type FsNode =
-//     | Directory of Dir
-//     | File of File
-//
-// and Dir = { name : string; nodes : FsNode list }
-// and File = { name : string; size : int }
-//         
-//
-// module Dir =
-//     let root = { name = "/"; nodes = List.empty }
-//     let empty name = { name = name; nodes = List.empty }
-//     
-//     let addNode node dir =
-//         { dir with nodes = (node :: dir.nodes) }
-//         
-//     let addNodeToPath node path =
-//         path |> 
-//         (List.head path |> addNode node) :: List.tail path
-//         
-//     let getRoot = List.last
+type Line =
+    | Cd of string
+    | Ls
+    | FileMetadata of int
+    | DirMetadata of string
+    
+let parseLine line =
+    match (splitBy " " line) with
+    | [| "$"; "cd"; dir |] -> Cd dir
+    | [| "$"; "ls" |] -> Ls
+    | [| "dir"; dir |] -> DirMetadata dir
+    | [| size; _ |] -> FileMetadata (int size)
+    | _ -> failwith "cant parse"
 
-module Parsing =
-    type Line =
-        | Cd of string
-        | Ls
-        | FileMetadata of string*int
-        | DirMetadata of string
-        
-    let parseLines strings =
-        let parseLine (line: string) =
-            match (splitBy " " line) with
-            | [| "$"; "cd"; dir |] -> Cd dir
-            | [| "$"; "ls" |] -> Ls
-            | [| "dir"; dir |] -> DirMetadata dir
-            | [| size; name |] -> FileMetadata (name, int size)
-            | _ -> failwith "cant parse"
-        
-        strings
-        |> Seq.map parseLine
-        
-    let parseInput = splitInputByNewLines >> parseLines
-
-// let buildFs lines =
-//     lines
-//     |> Seq.fold (fun path curr ->
-//         match curr with
-//         | Parsing.Line.Cd "/" -> path
-//         | Parsing.Line.Cd ".." -> List.tail path
-//         | Parsing.Line.Cd dir ->
-//             let currDir = List.head path
-//             let newDir = currDir.nodes
-//                       |> Seq.find (fun node ->
-//                                      match node with
-//                                      | Directory childDir when childDir.name = dir -> true
-//                                      | _ -> false)
-//                       
-//             match newDir with
-//             | Directory d -> d :: path
-//             | _ -> failwith "cant cd into non-directory"
-//         | Parsing.Line.Ls -> path
-//         | Parsing.Line.FileMetadata (name,size) ->
-//             let file = { name = name; size = size }
-//             Dir.addNodeToPath (File file) path
-//             
-//         | Parsing.Line.DirMetadata name ->
-//             let child = Dir.empty name
-//             Dir.addNodeToPath (Directory child) path        
-//         ) [Dir.root]
-//
-// let rec getSize1 maxSize fs =
-//     let rec inner accum fs =
-//         match fs with
-//         | Directory dir ->
-//             let childrenSizes = dir.nodes |> Seq.fold inner []
-//             let totalSize = childrenSizes |> Seq.sumBy fst
-//             if totalSize > maxSize
-//             then ((totalSize, Some dir) :: accum)
-//             else accum
-//         | File f -> [f.size,None]
-//     
-//     let smallDirs = inner [] fs
-//     smallDirs |> Seq.map fst |> Seq.sum
-//     
-// let calculateSize1 = Parsing.parseInput >> buildFs >> Dir.getRoot >> Directory >> getSize1 100000
-//
-// let sampleResult = calculateSize1 sample1
-//
-// let solve1 = printfn $"{sampleResult}"
-// let solve2 = printfn $"{sample1}"
+let parseInput = splitInputByNewLines >> Seq.map parseLine    
 
 
-// TOMORROW
-// it isnt that hard. Build a map where the key is each path for a dir.
-// traverse the lines, keep track of the current path, and when a file is encountered, add its size to every parent.
-
-
+let changeMap changeFn key map =
+    Map.change key changeFn map
 
 let traverse lines =
     lines
-    |> Seq.fold (fun (sizes,path) curr ->
+    |> Seq.fold (fun acc curr ->
+        let sizes,path = acc
         match curr with
-        | Parsing.Line.Cd "/" -> (sizes,path)
-        | Parsing.Line.Cd ".." -> sizes, List.tail path
-        | Parsing.Line.Cd dir ->
+        | Line.Ls -> acc
+        | DirMetadata _ -> acc
+        
+        | Cd "/" -> acc
+        | Cd ".." -> sizes, List.tail path
+        | Cd dir ->
             let newPath = (List.head path) + "/" + dir 
             sizes, newPath :: path
-        | Parsing.Line.Ls -> (sizes,path)
-        | Parsing.Line.FileMetadata (name,size) ->
-            path
-            |> Seq.fold (fun acc path ->
-                acc
-                |> Map.change path (fun currSize ->
-                    match currSize with
-                    | Some x -> Some (x + size)
-                    | None -> Some size)
-                ) sizes, path
-            // todo size to all parents
-           
-        | Parsing.Line.DirMetadata name -> (sizes,path)     
+        
+        | FileMetadata size ->
+            let addSize = Option.defaultValue 0 >> Some >> Option.map ((+) size)
+            let newSizes = Seq.fold (fun sizes dir -> Map.change dir addSize sizes) sizes path
+            newSizes, path
         ) (Map.empty<string, int>,["/"])
     |> fst
     
 let sumDirsUnderCap (maxSize : int) fs =
     fs
-    |> Map.filter (fun path size -> size < maxSize)
     |> Map.values
+    |> Seq.filter ((>) maxSize)
     |> Seq.sum
 
-let calculate1 = Parsing.parseInput >> traverse >> sumDirsUnderCap 100000
-let sampleResult1 = calculate1 sample1
-let result1 = calculate1 input1
+let solve1 = parseInput >> traverse >> sumDirsUnderCap 100000
+let print1 = printfn $"{solve1 sample1} {solve1 input1}"
 
-let solve1 = printfn $"{sampleResult1} {result1}"
-let solve2 = printfn $"{sampleResult1}"
+let findSmallestOverCap (maxSize : int) (fs : Map<string, int>) =
+    let usedSpace = Map.find "/" fs
+    let minDirSize = maxSize - (70000000 - usedSpace)
+    fs
+    |> Map.values
+    |> Seq.filter ((<) minDirSize)
+    |> Seq.min
+    
+let solve2 = parseInput >> traverse >> findSmallestOverCap 30000000
+let print2 = printfn $"{solve2 sample1} {solve2 input1}"
