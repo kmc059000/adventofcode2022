@@ -40,7 +40,7 @@ let traverseAndCollect lines =
         ) (Map.empty<string, int>,["/"])
     |> fst
     
-let sumDirsUnderCap (maxSize : int) fs =
+let sumDirsUnderCap maxSize fs =
     fs
     |> Map.values
     |> Seq.filter ((>) maxSize)
@@ -49,7 +49,7 @@ let sumDirsUnderCap (maxSize : int) fs =
 let solve1 = parseInput >> traverseAndCollect >> sumDirsUnderCap 100000
 let print1 = printfn $"{solve1 sample1} {solve1 input1}"
 
-let findSmallestOverCap (maxSize : int) (fs : Map<string, int>) =
+let findSmallestOverCap maxSize fs =
     let usedSpace = Map.find "/" fs
     let minDirSize = maxSize - (70000000 - usedSpace)
     fs
