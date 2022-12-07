@@ -14,7 +14,6 @@ let findStart (len : int) (str : String) =
         | None, _ ->
             let count = str.Substring(currentIndex - (len - 1), len).ToCharArray() |> Set.ofArray |> Set.count
             if count = len then (Some currentIndex, currentIndex + 1) else (None, currentIndex + 1)            
-        | _ -> failwith "todo"
         ) (None, 0) str |> snd
 
 let betterFindStart len str =

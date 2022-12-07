@@ -2,6 +2,7 @@
 
 open System
 open AoC2022.Inputs
+open Utils
 
 let parseRange (str : string) = str.Split('-', ',') |> Array.map parseInt
 

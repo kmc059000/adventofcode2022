@@ -2,6 +2,7 @@
 
 open System
 open AoC2022.Inputs
+open Utils
 
 let scores = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 let getScore (item : char) = scores.IndexOf(item)
