@@ -17,13 +17,9 @@ let parseLine line =
     | [| size; _ |] -> FileMetadata (int size)
     | _ -> failwith "cant parse"
 
-let parseInput = splitInputByNewLines >> Seq.map parseLine    
+let parseInput = splitInputByNewLines >> Seq.map parseLine
 
-
-let changeMap changeFn key map =
-    Map.change key changeFn map
-
-let traverse lines =
+let traverseAndCollect lines =
     lines
     |> Seq.fold (fun acc curr ->
         let sizes,path = acc
@@ -50,7 +46,7 @@ let sumDirsUnderCap (maxSize : int) fs =
     |> Seq.filter ((>) maxSize)
     |> Seq.sum
 
-let solve1 = parseInput >> traverse >> sumDirsUnderCap 100000
+let solve1 = parseInput >> traverseAndCollect >> sumDirsUnderCap 100000
 let print1 = printfn $"{solve1 sample1} {solve1 input1}"
 
 let findSmallestOverCap (maxSize : int) (fs : Map<string, int>) =
@@ -61,5 +57,5 @@ let findSmallestOverCap (maxSize : int) (fs : Map<string, int>) =
     |> Seq.filter ((<) minDirSize)
     |> Seq.min
     
-let solve2 = parseInput >> traverse >> findSmallestOverCap 30000000
+let solve2 = parseInput >> traverseAndCollect >> findSmallestOverCap 30000000
 let print2 = printfn $"{solve2 sample1} {solve2 input1}"
