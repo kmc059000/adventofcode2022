@@ -5,26 +5,26 @@ open System.Collections.Generic
 open AoC2022.Inputs.Day07
 open Utils
 
-type FsNode =
-    | Directory of Dir
-    | File of File
-
-and Dir = { name : string; nodes : FsNode list }
-and File = { name : string; size : int }
-        
-
-module Dir =
-    let root = { name = "/"; nodes = List.empty }
-    let empty name = { name = name; nodes = List.empty }
-    
-    let addNode node dir =
-        { dir with nodes = (node :: dir.nodes) }
-        
-    let addNodeToPath node path =
-        path |> 
-        (List.head path |> addNode node) :: List.tail path
-        
-    let getRoot = List.last
+// type FsNode =
+//     | Directory of Dir
+//     | File of File
+//
+// and Dir = { name : string; nodes : FsNode list }
+// and File = { name : string; size : int }
+//         
+//
+// module Dir =
+//     let root = { name = "/"; nodes = List.empty }
+//     let empty name = { name = name; nodes = List.empty }
+//     
+//     let addNode node dir =
+//         { dir with nodes = (node :: dir.nodes) }
+//         
+//     let addNodeToPath node path =
+//         path |> 
+//         (List.head path |> addNode node) :: List.tail path
+//         
+//     let getRoot = List.last
 
 module Parsing =
     type Line =
@@ -47,55 +47,95 @@ module Parsing =
         
     let parseInput = splitInputByNewLines >> parseLines
 
-let buildFs lines =
-    lines
-    |> Seq.fold (fun path curr ->
-        match curr with
-        | Parsing.Line.Cd "/" -> path
-        | Parsing.Line.Cd ".." -> List.tail path
-        | Parsing.Line.Cd dir ->
-            let currDir = List.head path
-            let newDir = currDir.nodes
-                      |> Seq.find (fun node ->
-                                     match node with
-                                     | Directory childDir when childDir.name = dir -> true
-                                     | _ -> false)
-                      
-            match newDir with
-            | Directory d -> d :: path
-            | _ -> failwith "cant cd into non-directory"
-        | Parsing.Line.Ls -> path
-        | Parsing.Line.FileMetadata (name,size) ->
-            let file = { name = name; size = size }
-            Dir.addNodeToPath (File file) path
-            
-        | Parsing.Line.DirMetadata name ->
-            let child = Dir.empty name
-            Dir.addNodeToPath (Directory child) path        
-        ) [Dir.root]
-
-let rec getSize1 maxSize fs =
-    let rec inner accum fs =
-        match fs with
-        | Directory dir ->
-            let childrenSizes = dir.nodes |> Seq.fold inner []
-            let totalSize = childrenSizes |> Seq.sumBy fst
-            if totalSize > maxSize
-            then ((totalSize, Some dir) :: accum)
-            else accum
-        | File f -> [f.size,None]
-    
-    let smallDirs = inner [] fs
-    smallDirs |> Seq.map fst |> Seq.sum
-    
-let calculateSize1 = Parsing.parseInput >> buildFs >> Dir.getRoot >> Directory >> getSize1 100000
-
-let sampleResult = calculateSize1 sample1
-
-let solve1 = printfn $"{sampleResult}"
-let solve2 = printfn $"{sample1}"
+// let buildFs lines =
+//     lines
+//     |> Seq.fold (fun path curr ->
+//         match curr with
+//         | Parsing.Line.Cd "/" -> path
+//         | Parsing.Line.Cd ".." -> List.tail path
+//         | Parsing.Line.Cd dir ->
+//             let currDir = List.head path
+//             let newDir = currDir.nodes
+//                       |> Seq.find (fun node ->
+//                                      match node with
+//                                      | Directory childDir when childDir.name = dir -> true
+//                                      | _ -> false)
+//                       
+//             match newDir with
+//             | Directory d -> d :: path
+//             | _ -> failwith "cant cd into non-directory"
+//         | Parsing.Line.Ls -> path
+//         | Parsing.Line.FileMetadata (name,size) ->
+//             let file = { name = name; size = size }
+//             Dir.addNodeToPath (File file) path
+//             
+//         | Parsing.Line.DirMetadata name ->
+//             let child = Dir.empty name
+//             Dir.addNodeToPath (Directory child) path        
+//         ) [Dir.root]
+//
+// let rec getSize1 maxSize fs =
+//     let rec inner accum fs =
+//         match fs with
+//         | Directory dir ->
+//             let childrenSizes = dir.nodes |> Seq.fold inner []
+//             let totalSize = childrenSizes |> Seq.sumBy fst
+//             if totalSize > maxSize
+//             then ((totalSize, Some dir) :: accum)
+//             else accum
+//         | File f -> [f.size,None]
+//     
+//     let smallDirs = inner [] fs
+//     smallDirs |> Seq.map fst |> Seq.sum
+//     
+// let calculateSize1 = Parsing.parseInput >> buildFs >> Dir.getRoot >> Directory >> getSize1 100000
+//
+// let sampleResult = calculateSize1 sample1
+//
+// let solve1 = printfn $"{sampleResult}"
+// let solve2 = printfn $"{sample1}"
 
 
 // TOMORROW
 // it isnt that hard. Build a map where the key is each path for a dir.
 // traverse the lines, keep track of the current path, and when a file is encountered, add its size to every parent.
+
+
+
+let traverse lines =
+    lines
+    |> Seq.fold (fun (sizes,path) curr ->
+        match curr with
+        | Parsing.Line.Cd "/" -> (sizes,path)
+        | Parsing.Line.Cd ".." -> sizes, List.tail path
+        | Parsing.Line.Cd dir ->
+            let newPath = (List.head path) + "/" + dir 
+            sizes, newPath :: path
+        | Parsing.Line.Ls -> (sizes,path)
+        | Parsing.Line.FileMetadata (name,size) ->
+            path
+            |> Seq.fold (fun acc path ->
+                acc
+                |> Map.change path (fun currSize ->
+                    match currSize with
+                    | Some x -> Some (x + size)
+                    | None -> Some size)
+                ) sizes, path
+            // todo size to all parents
+           
+        | Parsing.Line.DirMetadata name -> (sizes,path)     
+        ) (Map.empty<string, int>,["/"])
+    |> fst
+    
+let sumDirsUnderCap (maxSize : int) fs =
+    fs
+    |> Map.filter (fun path size -> size < maxSize)
+    |> Map.values
+    |> Seq.sum
+
+let calculate1 = Parsing.parseInput >> traverse >> sumDirsUnderCap 100000
+let sampleResult1 = calculate1 sample1
+let result1 = calculate1 input1
+
+let solve1 = printfn $"{sampleResult1} {result1}"
+let solve2 = printfn $"{sampleResult1}"
