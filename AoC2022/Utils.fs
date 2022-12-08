@@ -19,3 +19,4 @@ let parseInt (str : string) = Int32.Parse(str)
 
 let splitByAll (separators : string) (str: string) = str.Split(separators.ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
     
+let chars (str : string) = str.ToCharArray() |> Array.map string
