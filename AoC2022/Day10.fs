@@ -4,7 +4,7 @@ open System
 open AoC2022.Inputs.Day10
 open Utils
 
-type CycleState = { cycle : int; value: int }
+type CycleState = { cycle : int; value: int; endOfCycleValue : int }
 
 module CycleState =
     let product c = c.cycle * c.value
@@ -13,12 +13,13 @@ let importantCycles = [|20; 60; 100; 140; 180; 220|]
 
 let execute reg command startingCycle =
     match splitBy " " command with
-    | [|"noop"|] -> [{ cycle = startingCycle; value = reg }],reg
+    | [|"noop"|] -> [{ cycle = startingCycle; value = reg; endOfCycleValue = reg; }],reg
     | [|"addx"; num |] ->
+        let endValue = (reg + (int num))
         [
-            { cycle = startingCycle; value = reg };
-            { cycle = startingCycle + 1; value = reg }
-        ], (reg + (int num))
+            { cycle = startingCycle; value = reg; endOfCycleValue = reg; };
+            { cycle = startingCycle + 1; value = reg; endOfCycleValue = endValue; }
+        ], endValue
     | _ -> failwith "cant interpret"
 
 let executeAll lines=
@@ -51,7 +52,22 @@ let print1 = printfn $"{run sample1} {run input1}"
 
 
 
+let printCycle cycle =
+    let position = (cycle.cycle - 1) % 40 
+    if position = 0 then Console.WriteLine()
+    
+    if position >= cycle.value - 1 && position <= cycle.value + 1 then
+        Console.Write("#")
+    else Console.Write(" ")
+    
+    // Console.Write(cycle.value)
+    // Console.Write(' ')
+
+let printCRT cycles =
+    cycles |> List.map printCycle |> ignore
+    Console.WriteLine("\n\n\n")
+    
+let runAndPrint = splitInputByNewLines >> executeAll >> printCRT
 
 
-
-let print2 = ignore
+let print2 = printfn $"{runAndPrint sample1} {runAndPrint input1}"
