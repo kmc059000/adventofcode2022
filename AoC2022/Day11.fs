@@ -60,12 +60,12 @@ module Processing =
         Option.map (fun m -> { m with timesInspected = m.timesInspected + 1 })
     
     let processItem worry monkey monkeys (item : int64) =
-        let newWorryLevel = if worry then monkey.operation item / (int64 3) else item
+        let newWorryLevel = if worry then monkey.operation item / (int64 3) else monkey.operation item
         let newMonkey = monkey.testFn newWorryLevel
         monkeys 
         |> Map.change monkey.idx (removeItem)
         |> Map.change monkey.idx incProcessed
-        |> Map.change newMonkey (addItem newWorryLevel)
+        |> Map.change newMonkey (addItem newWorryLevel) 
     
     let processMonkey worry monkeys monkey =
         monkey.items
@@ -96,9 +96,17 @@ let printItems monkeys =
     monkeys
     
 let score (monkeys : Map<int,Monkey>) =
-    monkeys
-    |> Map.values
-    |> Seq.map (fun monkey -> monkey.timesInspected)
+    let scores =
+        monkeys
+        |> Map.values
+        |> Seq.map (fun monkey -> monkey.timesInspected)
+        
+    scores
+    |> Seq.mapi (fun i x -> Console.WriteLine(i.ToString() + " - " + x.ToString()))
+    |> List.ofSeq
+    |> ignore
+    
+    scores
     |> Seq.sortDescending
     |> Seq.take 2
     |> Seq.fold (*) 1
@@ -116,4 +124,6 @@ let print1 =
     
 let print2 =
     Console.WriteLine("**************** #2")
-    sample1 |> runRounds false 10000 |> printItems |> (score >> printScore) |> ignore
+    sample1 |> runRounds false 1000 |> printItems |> (score >> printScore) |> ignore
+    
+    //sample1 |> runRounds false 10000 |> printItems |> (score >> printScore) |> ignore
