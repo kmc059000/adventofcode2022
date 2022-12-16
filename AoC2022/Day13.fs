@@ -47,19 +47,18 @@ let parseLines str =
     |> Array.map (fun arr -> arr[0],arr[1])
     
 
-let isInOrder (val1,val2) =
-    
-    let rec inner (val1,val2) : bool option =
+let compare (val1,val2) =
+    let rec inner (val1,val2) : int option =
         match val1,val2 with
         | Integer l, Integer r ->
-            if l < r then Some true
-            else if l > r then Some false
+            if l < r then Some -1
+            else if l > r then Some 1
             else None
         | List l, List r ->
             match l,r with
             | [], [] -> None
-            | [], _ -> Some true
-            | _, [] -> Some false
+            | [], _ -> Some -1
+            | _, [] -> Some 1
             | l :: ls, r :: rs ->
                 match inner (l,r) with
                 | None -> inner (List ls,List rs)
@@ -68,8 +67,9 @@ let isInOrder (val1,val2) =
         | Integer l, List r -> inner (List [Integer l], val2)
         | List l, Integer r -> inner (val1, List [Integer r])
         
-    (inner (val1,val2)) |> Option.defaultValue false
-    
+    (inner (val1,val2)) |> Option.get
+
+let isInOrder (val1,val2) = compare (val1,val2) < 0
     
     
 let lift op a b =
@@ -79,7 +79,8 @@ let lift op a b =
     
 let getSum input =
     parseLines input
-    |> Array.mapi (fun i x -> if isInOrder x then Some (i + 1) else None)
+    |> Array.map isInOrder
+    |> Array.mapi (fun i x -> if x then Some (i + 1) else None)
     |> Array.choose id
     |> Array.fold (+) 0 
 
@@ -87,4 +88,29 @@ let print1 =
     Console.WriteLine(getSum sample1)
     Console.WriteLine(getSum input1)
     ()
-let print2 = ()
+    
+    
+let sort input =
+    input + "\n\n[[2]]\n[[6]]"
+    |> parseLines
+    |> Seq.map (fun (a,b) -> [a; b])
+    |> Seq.collect id
+    |> Seq.sortWith (fun a b -> compare (a,b))
+    |> List.ofSeq
+    
+let getKey values =
+    values
+    |> Seq.fold (fun (sum,idx) curr ->
+        match curr with
+        | List [List [Integer 2]] -> (sum * idx,idx + 1)
+        | List [List [Integer 6]] -> (sum * idx,idx + 1)
+        | _ -> (sum,idx+1)
+        ) (1,1)
+    |> fst
+    
+let solve2 = (sort >> getKey) 
+   
+let print2 =
+    Console.WriteLine(solve2 sample1)
+    Console.WriteLine(solve2 input1)
+    ()
