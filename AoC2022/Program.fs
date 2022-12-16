@@ -33,5 +33,6 @@ open Day10
 open Day11
 open Day12
 open Day13
+open Day14
 print1
 print2
