@@ -26,11 +26,17 @@ let replace (find: string) (replacement: string) (string : string) = string.Repl
 let toString x = x.ToString()
 
 let indexOf (find: string) (str : string) = str.IndexOf(find)
-let indexOfFlipped str find = indexOf find str
 let lastIndexOf (find: string) (str : string) = str.LastIndexOf(find)
-let lastIndexOfFlipped str find = lastIndexOf find str
-
 
 let tapValue value =
     Console.WriteLine(value.ToString())
     value
+    
+let tapValue2 v1 value =
+    Console.WriteLine(v1.ToString() + " " + value.ToString())
+    value
+    
+    
+let flip f x y = f y x
+
+let isPositive x = x >= 0

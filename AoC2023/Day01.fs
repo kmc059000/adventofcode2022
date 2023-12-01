@@ -5,45 +5,35 @@ open Utils
 open AoC2023.Inputs
 
 type MatchCases = { MatchText : string; Value : int }
-let p1Cases = [1..9] |> Seq.map (fun x -> { MatchText = x.ToString(); Value = x })
+let makeMatchCases matchText value = { MatchText = matchText; Value = value }
+let p1Cases = [1..9] |> Seq.map (fun x -> makeMatchCases (x.ToString()) x) |> Seq.toList
 let p2Cases =
-    let words = [ "one"; "two"; "three"; "four"; "five"; "six"; "seven"; "eight"; "nine" ] |> Seq.mapi (fun i x -> { MatchText = x.ToString(); Value = i + 1 })
-    Seq.append p1Cases words |> Seq.toArray
+    [ "one"; "two"; "three"; "four"; "five"; "six"; "seven"; "eight"; "nine" ]
+    |> List.mapi (fun i x -> makeMatchCases (x.ToString()) (i + 1))
+    |> List.append p1Cases
     
-
-
-let findMatch findIndex picker cases =
+let findMatch findIndex matchPicker cases str =
     cases
-    |> Seq.map (fun x -> (findIndex x.MatchText, x.Value))
-    |> Seq.filter (fun (idx, _) -> idx >= 0)
-    |> picker fst
+    |> List.map (fun x -> (findIndex x.MatchText str, x.Value))
+    |> List.filter (fst >> isPositive)
+    |> matchPicker fst
     |> snd
     
-let firstMatch str = findMatch (indexOfFlipped str) Seq.minBy
-let lastMatch str = findMatch (lastIndexOfFlipped str) Seq.maxBy
+let firstMatch = findMatch indexOf List.minBy
+let lastMatch = findMatch lastIndexOf List.maxBy
 
-                
-let lineCalibrationValue cases (str : string) : int =
-    [ firstMatch str cases; lastMatch str cases ] |> Seq.map _.ToString() |> String.concat "" |> parseInt
-    
-let calibrateLine1 = lineCalibrationValue p1Cases
-        
-let calibrationValue (calibrate : string -> int) =
-    splitInputByNewLines
-    >> Seq.map calibrate
-    >> Seq.sum
-    
-let problem1 = calibrationValue calibrateLine1
+let calibrateLine cases str = (firstMatch cases str * 10) + (lastMatch cases str)
+let calibrateLines calibrateLine = splitInputByNewLines >> Seq.sumBy calibrateLine
+
+let solve1 = calibrateLines <| calibrateLine p1Cases
+let solve2 = calibrateLines <| calibrateLine p2Cases
 
 let print1 =
-    Console.WriteLine(problem1 day1p1Example)
-    Console.WriteLine(problem1 day1p1)
+    Console.WriteLine(solve1 day1p1Example)
+    Console.WriteLine(solve1 day1p1)
     ()
-                
-let lineCalibrationValue2 = lineCalibrationValue p2Cases
    
 let print2 =
-    Console.WriteLine(lineCalibrationValue2 "eightwothree")
-    Console.WriteLine(calibrationValue lineCalibrationValue2 day1p2example)
-    Console.WriteLine(calibrationValue lineCalibrationValue2 day1p1)
+    Console.WriteLine(solve2 day1p2example)
+    Console.WriteLine(solve2 day1p1)
     ()
