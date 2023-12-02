@@ -11,6 +11,9 @@ let joinInts (separator : string) (ints : seq<int>) =
     
 let splitBy (separator : string) (str: string) = str.Split(separator, StringSplitOptions.RemoveEmptyEntries)
 
+let splitBySpaces = splitBy " "
+let splitByComma = splitBy ","
+
 let splitInputByNewLines (str : string) = str.Split("\n", StringSplitOptions.RemoveEmptyEntries)
 
 let splitInputByDoubleNewLines (str : string) = str.Split("\n\n", StringSplitOptions.RemoveEmptyEntries)
