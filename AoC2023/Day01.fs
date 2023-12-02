@@ -4,21 +4,19 @@ open System
 open Utils
 open AoC2023.Inputs
 
-type MatchCases = { MatchText : string; Value : int }
-let makeMatchCases matchText value = { MatchText = matchText; Value = value }
-let p1Cases = [1..9] |> Seq.map (fun x -> makeMatchCases (x.ToString()) x) |> Seq.toList
+let p1Cases = [1..9] |> List.map (fun x -> (x.ToString(), x))
 let p2Cases =
     [ "one"; "two"; "three"; "four"; "five"; "six"; "seven"; "eight"; "nine" ]
-    |> List.mapi (fun i x -> makeMatchCases (x.ToString()) (i + 1))
+    |> List.mapi (fun i x -> (x.ToString(), (i + 1)))
     |> List.append p1Cases
     
 let findMatch findIndex matchPicker cases str =
     cases
-    |> List.map (fun x -> (findIndex x.MatchText str, x.Value))
+    |> List.map (fun (matchText, value) -> (findIndex matchText str, value))
     |> List.filter (fst >> isPositive)
     |> matchPicker fst
     |> snd
-    
+   
 let firstMatch = findMatch indexOf List.minBy
 let lastMatch = findMatch lastIndexOf List.maxBy
 

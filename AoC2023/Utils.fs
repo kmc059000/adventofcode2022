@@ -40,3 +40,6 @@ let tapValue2 v1 value =
 let flip f x y = f y x
 
 let isPositive x = x >= 0
+
+let joinMaps (p:Map<'a,'b>) (q:Map<'a,'b>) = 
+    Map(Seq.concat [ (Map.toSeq p) ; (Map.toSeq q) ])
