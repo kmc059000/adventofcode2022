@@ -48,3 +48,5 @@ let isPositive x = x >= 0
 
 let joinMaps (p:Map<'a,'b>) (q:Map<'a,'b>) = 
     Map(Seq.concat [ (Map.toSeq p) ; (Map.toSeq q) ])
+    
+let toTuple xFn yFn value = (xFn value, yFn value)
