@@ -37,15 +37,35 @@ let isAdjacentToSymbol (symbolsMap: Map<Position, Symbol>) (number : Number) =
                 yield pos r c]
     positions |> Seq.exists symbolsMap.ContainsKey
 
-let numberNextToSymbol board =
+let numberNextToSymbol board = isAdjacentToSymbol board.symbolMap
+
+let numbersNextToSymbol board =
     board.numbers
-    |> List.filter (isAdjacentToSymbol board.symbolMap)
+    |> List.filter (numberNextToSymbol board)
+    
+    
+let isGear board symbol =
+    let boardWithOnlyThisSymbol = { board with symbols = [symbol]; symbolMap = Map.ofList [symbol.pos, symbol] }
+    match symbol.sym with
+    | "*" ->
+        let numbers = board.numbers |> List.filter (numberNextToSymbol boardWithOnlyThisSymbol)
+        let isGear = numbers |> List.length = 2
+        if isGear
+        then Some (symbol, (numbers |> Seq.map _.value |> Seq.reduce (*)))
+        else None
+    | _ -> None
+
+let gearRatios board =
+    board.symbols
+    |> List.choose (isGear board)
     //|> tapValues
+    |> Seq.map snd
+    |> Seq.reduce (+)
     
 
-let solve1 = splitInputByNewLines >> parseBoard >> numberNextToSymbol >> Seq.sumBy _.value
+let solve1 = splitInputByNewLines >> parseBoard >> numbersNextToSymbol >> Seq.sumBy _.value
 
-let solve2 _ = ""
+let solve2 = splitInputByNewLines >> parseBoard >> gearRatios
 
 
 let print1 =
@@ -54,6 +74,6 @@ let print1 =
     ()
    
 let print2 =
-    Console.WriteLine(solve2 day3p2example)
-    Console.WriteLine(solve2 day3p2)
+    Console.WriteLine(solve2 day3p1example)
+    Console.WriteLine(solve2 day3p1)
     ()
