@@ -1,7 +1,7 @@
 ﻿// For more information see https://aka.ms/fsharp-console-apps
 //open Day01
-open Day02
-// open Day03
+//open Day02
+open Day03
 // open Day04
 // open Day05
 // open Day07

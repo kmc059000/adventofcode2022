@@ -2,7 +2,7 @@
 
 open System
 open Utils
-open AoC2023.Inputs
+open AoC2023.Inputs.Day01
 
 let p1Cases = [1..9] |> List.map (fun x -> (x.ToString(), x))
 let p2Cases =

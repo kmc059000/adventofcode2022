@@ -2,7 +2,7 @@
 
 open System
 open Utils
-open AoC2023.Inputs
+open AoC2023.Inputs.Day02
 
 type Game = { id: int; draws: Draw list }
 and Draw = { red: int; green: int; blue: int }
