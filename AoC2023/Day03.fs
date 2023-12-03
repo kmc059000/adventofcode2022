@@ -27,8 +27,8 @@ let boardFromLines lines =
     let symbols = lines |> Seq.collect (_.symbols >> _.Values) |> List.ofSeq
     let symbolMap = symbols |> Seq.map (toTuple _.pos id) |> Map.ofSeq
     { numbers = numbers; symbols = symbolMap }
-    
-let parseBoard = splitInputByNewLines >> Seq.mapi parseLine >> List.ofSeq >> boardFromLines
+
+let parseBoard = parseGrid parseLine boardFromLines
 
 let isAdjacentToSymbol (symbolsMap: Map<Position, Symbol>) (number : Number) =
     [for row in [number.pos.row - 1..number.pos.row + 1] do

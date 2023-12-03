@@ -50,3 +50,10 @@ let joinMaps (p:Map<'a,'b>) (q:Map<'a,'b>) =
     Map(Seq.concat [ (Map.toSeq p) ; (Map.toSeq q) ])
     
 let toTuple xFn yFn value = (xFn value, yFn value)
+
+
+let parseGrid parseLine combineLines (input : string) =
+    input
+    |> splitInputByNewLines
+    |> Seq.mapi parseLine
+    |> combineLines
