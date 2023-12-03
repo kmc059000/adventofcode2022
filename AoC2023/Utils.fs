@@ -35,6 +35,8 @@ let tapValue value =
     Console.WriteLine(value.ToString())
     value
     
+let tapValues<'a> : 'a seq -> 'a seq = Seq.map tapValue
+    
 let tapValue2 v1 value =
     Console.WriteLine(v1.ToString() + " " + value.ToString())
     value
