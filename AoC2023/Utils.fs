@@ -11,8 +11,15 @@ let joinInts (separator : string) (ints : seq<int>) =
     
 let splitBy (separator : string) (str: string) = str.Split(separator, StringSplitOptions.RemoveEmptyEntries)
 
+let splitBy2 (separator : string) (str: string) =
+    let tokens = splitBy separator str
+    tokens[0], tokens[1]
+
+
 let splitBySpaces = splitBy " "
 let splitByComma = splitBy ","
+
+let splitIntsBySpaces = splitBySpaces >> Seq.map int
 
 let splitInputByNewLines (str : string) = str.Split("\n", StringSplitOptions.RemoveEmptyEntries)
 
@@ -59,3 +66,8 @@ let parseGrid parseLine combineLines (input : string) =
     |> combineLines
     
 let fst3 (x,_,_) = x
+
+let default0 = Option.defaultValue 0
+let default1 = Option.defaultValue 1
+
+let atLeast1 num = Math.Max(1, num)
