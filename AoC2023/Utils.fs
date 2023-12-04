@@ -57,3 +57,5 @@ let parseGrid parseLine combineLines (input : string) =
     |> splitInputByNewLines
     |> Seq.mapi parseLine
     |> combineLines
+    
+let fst3 (x,_,_) = x
