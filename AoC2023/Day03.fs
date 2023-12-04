@@ -19,13 +19,13 @@ let matchToSymbol row (m : Match) = { sym = m.Value; pos = pos row m.Index }
 
 let parseLine row str =
     let numbers = numRegex.Matches(str) |> Seq.map (matchToNumber row) |> List.ofSeq
-    let symbols = symbolRegex.Matches(str) |> Seq.map (matchToSymbol row) |> Seq.map (toTuple _.pos id) |> Map.ofSeq
+    let symbols = symbolRegex.Matches(str) |> Seq.map (matchToSymbol row) |> Seq.map (toTuple (_.pos) id) |> Map.ofSeq
     { numbers = numbers; symbols = symbols }
 
 let boardFromLines lines =
     let numbers = lines |> Seq.collect (_.numbers) |> List.ofSeq
     let symbols = lines |> Seq.collect (_.symbols >> _.Values) |> List.ofSeq
-    let symbolMap = symbols |> Seq.map (toTuple _.pos id) |> Map.ofSeq
+    let symbolMap = symbols |> Seq.map (toTuple (_.pos) id) |> Map.ofSeq
     { numbers = numbers; symbols = symbolMap }
 
 let parseBoard = parseGrid parseLine boardFromLines
