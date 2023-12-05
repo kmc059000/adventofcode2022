@@ -82,3 +82,6 @@ let mergeMaps map1 map2 =
 let mergeManyMaps maps =
     maps
     |> Seq.fold (fun acc map -> mergeMaps acc map) Map.empty
+    
+let isEven i = i % 2 = 0
+let isOdd i = i % 2 = 1

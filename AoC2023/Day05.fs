@@ -1,9 +1,11 @@
 ﻿module Day05
 
 open System
+open System.IO
 open Utils
 open AoC2023.Inputs.Day05
 
+type SeedRange = int64 * int64
 type NumMap = int64 * int64 * int64
 
 let doMap value numMap =
@@ -54,22 +56,35 @@ let solve1 = splitInputByDoubleNewLines >> parseMaps seedParser1 >> minLocationO
 
 let seedParser2 str =
     let seedTokens = str |> splitBy " " |> Seq.skip 1 |> Seq.map int64 |> List.ofSeq
-    let pairs = List.chunkBySize 2 seedTokens
-    let seeds =
-        [ for pair in pairs do
-            let start = List.head pair
-            let count = List.tail pair |> List.head
-            for i in start..(start + count - 1L) do
-                yield i ]
-    Console.WriteLine (Seq.length seeds)
-    Console.WriteLine (seeds |> Seq.map toString |> String.concat ", ")
-    
-    seeds
+    let seedRanges = List.pairwise seedTokens |> List.mapi (fun i seed -> (i, seed)) |> List.filter (fst >> isEven) |> List.map snd     
+    seedRanges
     
     
+let invertMaps (seeds, maps) =
+    let invertMap (sourceStart, destStart, length) = (destStart, sourceStart, length)
+    let invertedMaps =
+        maps
+        |> Seq.map (Seq.map invertMap >> Seq.toList)
+        |> Seq.rev
+        |> Seq.toList
+    (seeds, invertedMaps)
+    
+let reverseMinLocationOfAllSeeds (seeds : SeedRange list, maps : NumMap list list) =
+    let findSeed result =
+        if result % 1000000L = 0L then Console.WriteLine($"trying {result}")
+        let potentialSeed = minLocation maps result
+        let found = seeds |> List.exists (fun (min, count) -> potentialSeed >= min && potentialSeed < min + count)
+        if found then
+            Console.WriteLine("Found !!!!!!!!!!!!!! " + result.ToString())
+            Some result
+        else None
+    // i already ran everything from 0 to 27000000 and found nothing
+    seq { 27000000L.. Int64.MaxValue }
+    |> Seq.choose findSeed
+    |> Seq.head
     
 
-let solve2 = splitInputByDoubleNewLines >> parseMaps seedParser2 >> minLocationOfAllSeeds  
+let solve2 = splitInputByDoubleNewLines >> parseMaps seedParser2 >> invertMaps >> reverseMinLocationOfAllSeeds
 
 let print1 =
     Console.WriteLine(solve1 example1)
@@ -77,6 +92,6 @@ let print1 =
     ()
    
 let print2 =
-    Console.WriteLine(solve2 example1)
+    //Console.WriteLine(solve2 example1)
     Console.WriteLine(solve2 p1)
     ()
