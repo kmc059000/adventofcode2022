@@ -71,3 +71,14 @@ let default0 = Option.defaultValue 0
 let default1 = Option.defaultValue 1
 
 let atLeast1 num = Math.Max(1, num)
+
+let mergeMaps map1 map2 =
+    map1
+    |> Map.toList
+    |> List.fold (fun acc (key, value) ->
+        Map.add key value acc
+    ) map2
+    
+let mergeManyMaps maps =
+    maps
+    |> Seq.fold (fun acc map -> mergeMaps acc map) Map.empty
