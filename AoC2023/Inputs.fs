@@ -1766,3 +1766,11 @@ humidity-to-location map:
     
     let example2 = ""
     let p2 = ""
+    
+    
+module Day06 =
+    let example1 = ""
+    let p1 = ""
+    
+    let example2 = ""
+    let p2 = ""

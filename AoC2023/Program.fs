@@ -3,7 +3,8 @@
 //open Day02
 //open Day03
 //open Day04
-open Day05
+// open Day05
+open Day06
 // open Day07
 // open Day08
 // open Day09
