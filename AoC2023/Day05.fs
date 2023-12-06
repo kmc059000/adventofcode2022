@@ -82,9 +82,29 @@ let reverseMinLocationOfAllSeeds (seeds : SeedRange list, maps : NumMap list lis
     seq { 27000000L.. Int64.MaxValue }
     |> Seq.choose findSeed
     |> Seq.head
-    
 
-let solve2 = splitInputByDoubleNewLines >> parseMaps seedParser2 >> invertMaps >> reverseMinLocationOfAllSeeds
+let reverseMinLocationOfAllSeedsParallel minrange maxrange chunkSize (seeds : SeedRange list, maps : NumMap list list) =
+    let findSeed result =
+        if result % 1000000L = 0L then Console.WriteLine($"trying {result}")
+        let potentialSeed = minLocation maps result
+        let found = seeds |> List.exists (fun (min, count) -> potentialSeed >= min && potentialSeed < min + count)
+        if found then
+            Console.WriteLine("Found !!!!!!!!!!!!!! " + result.ToString())
+            Some result
+        else None
+        
+    
+    let findSeedsInChunk = Seq.choose findSeed >> Seq.tryHead
+    let findSeedsInChunkAsync chunk = async { return findSeedsInChunk chunk }
+    
+    seq { minrange.. maxrange }
+    |> Seq.chunkBySize chunkSize
+    |> Seq.map findSeedsInChunkAsync
+    |> Async.Parallel
+    |> Async.RunSynchronously
+    |> Seq.minBy (Option.defaultValue Int64.MaxValue)
+
+let solve2 minrange maxrange chunkSize = splitInputByDoubleNewLines >> parseMaps seedParser2 >> invertMaps >> reverseMinLocationOfAllSeedsParallel minrange maxrange chunkSize
 
 let print1 =
     Console.WriteLine(solve1 example1)
@@ -92,6 +112,6 @@ let print1 =
     ()
    
 let print2 =
-    //Console.WriteLine(solve2 example1)
-    Console.WriteLine(solve2 p1)
+    Console.WriteLine(solve2 0L 1000L 10 example1)
+    Console.WriteLine(solve2 0L 100_000_000 100_000 p1)
     ()
