@@ -1,6 +1,4 @@
 ﻿module Day06
-
-open System
 open Utils
 open AoC2023.Inputs.Day06
 
