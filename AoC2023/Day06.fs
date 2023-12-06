@@ -8,22 +8,21 @@ let parseLineAsNumbers =
     splitByWhitespace
     >> SeqExtras.compactStrings
     >> Seq.map int64
-    >> Seq.toList
     
 let parseLineAsSingleNumber =
     splitByWhitespace
     >> SeqExtras.compactStrings
     >> String.concat ""
     >> int64
-    >> List.replicate 1
+    >> Seq.replicate 1
 
-let parse lineParser input =
-    let parseIntoLines lineParser =
+let parse parseLine input =
+    let parseLines =
         splitInputByNewLines
-        >> Seq.map (splitBy ":" >> Array.item 1 >> lineParser)
+        >> Seq.map (splitBy ":" >> Array.item 1 >> parseLine)
         >> SeqExtras.pluckFirst2ToTuple
         
-    input |> parseIntoLines lineParser ||> List.zip
+    input |> parseLines ||> Seq.zip
 
 let calculateNumWays (time, distance) =
     let calculateDist speed = (time - speed) * (speed)
