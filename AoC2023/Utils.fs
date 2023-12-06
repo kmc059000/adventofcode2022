@@ -2,6 +2,7 @@
 
 open System
 open System.Collections.Generic
+open System.Text.RegularExpressions
 
 let reverse (input:string) = input |> Seq.rev |> System.String.Concat
 let joinInts (separator : string) (ints : seq<int>) =
@@ -48,6 +49,7 @@ let tapValue2 v1 value =
     Console.WriteLine(v1.ToString() + " " + value.ToString())
     value
     
+let tapValues2<'a> v : 'a seq -> 'a seq = Seq.map (tapValue2 v)
     
 let flip f x y = f y x
 
@@ -85,3 +87,10 @@ let mergeManyMaps maps =
     
 let isEven i = i % 2 = 0
 let isOdd i = i % 2 = 1
+
+let splitByRegex (regex : Regex) string = regex.Split(string) |> List.ofArray
+    
+let takeAs2 seq = 
+    let e1 = Seq.head seq
+    let e2 = Seq.head (Seq.skip 1 seq)
+    e1, e2

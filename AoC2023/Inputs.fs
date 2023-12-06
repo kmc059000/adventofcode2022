@@ -1769,8 +1769,10 @@ humidity-to-location map:
     
     
 module Day06 =
-    let example1 = ""
-    let p1 = ""
+    let example1 = "Time:      7  15   30
+Distance:  9  40  200"
+    let p1 = "Time:        48     87     69     81
+Distance:   255   1288   1117   1623"
     
     let example2 = ""
     let p2 = ""
