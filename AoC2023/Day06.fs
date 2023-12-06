@@ -1,45 +1,43 @@
 ﻿module Day06
 
 open System
-open System.IO
-open System.Text.RegularExpressions
 open Utils
 open AoC2023.Inputs.Day06
 
+let parseLineAsNumbers =
+    splitByWhitespace
+    >> SeqExtras.compactStrings
+    >> Seq.map int64
+    >> Seq.toList
+    
+let parseLineAsSingleNumber =
+    splitByWhitespace
+    >> SeqExtras.compactStrings
+    >> String.concat ""
+    >> int64
+    >> List.replicate 1
 
-let parse input =
-    let times, distances =
-        splitInputByNewLines input
-        |> Seq.map (splitBy ":")
-        |> Seq.map (fun x -> x[1])
-        |> Seq.map ((splitByRegex (Regex("\s+", RegexOptions.Compiled))) >> List.filter (String.IsNullOrEmpty >> not) >> (List.map int64))
-        |> List.ofSeq
-        |> takeAs2
-    List.zip times distances
+let parse lineParser input =
+    let parseIntoLines lineParser =
+        splitInputByNewLines
+        >> Seq.map (splitBy ":" >> Array.item 1 >> lineParser)
+        >> SeqExtras.pluckFirst2ToTuple
+        
+    input |> parseIntoLines lineParser ||> List.zip
 
 let calculateNumWays (time, distance) =
     let calculateDist speed = (time - speed) * (speed)
-    tapValue <| "TIME: "+ time.ToString() |> ignore
     seq { 0L..time }
     |> Seq.map calculateDist
     |> Seq.filter ((<) distance)
-    //|> tapValues2 time
     |> Seq.length
-    |> tapValue
 
-let solve1 = parse >> Seq.map calculateNumWays >> Seq.reduce (*)
+let solve lineParser = parse lineParser >> Seq.map calculateNumWays >> Seq.reduce (*)
 
-let parse2 input =
-    let times, distances =
-        splitInputByNewLines input
-        |> Seq.map (splitBy ":")
-        |> Seq.map (fun x -> x[1])
-        |> Seq.map ((splitByRegex (Regex("\s+", RegexOptions.Compiled))) >> List.filter (String.IsNullOrEmpty >> not) >> String.concat "" >> int64)
-        |> List.ofSeq
-        |> takeAs2
-    [times,distances] |> tapValue
+let solve1 = solve parseLineAsNumbers
 
-let solve2 = parse2 >> Seq.map calculateNumWays >> Seq.reduce (*)
+let solve2 = solve parseLineAsSingleNumber
+
 let print1 =
     Console.WriteLine(solve1 example1)
     Console.WriteLine(solve1 p1)

@@ -90,7 +90,21 @@ let isOdd i = i % 2 = 1
 
 let splitByRegex (regex : Regex) string = regex.Split(string) |> List.ofArray
     
-let takeAs2 seq = 
-    let e1 = Seq.head seq
-    let e2 = Seq.head (Seq.skip 1 seq)
-    e1, e2
+let stringNotEmpty = String.IsNullOrEmpty >> not
+
+
+let regexWhitespace = Regex("\s+", RegexOptions.Compiled)
+
+let splitByWhitespace = splitByRegex regexWhitespace
+
+
+let inline (||>) (x1,x2) f = f x1 x2
+
+module SeqExtras =
+    let compactStrings : (string seq -> string seq) = Seq.filter stringNotEmpty
+    
+    let pluckFirst2ToTuple seq = 
+        let e1 = Seq.head seq
+        let e2 = Seq.head (Seq.skip 1 seq)
+        e1, e2
+    
