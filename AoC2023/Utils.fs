@@ -107,4 +107,22 @@ module SeqExtras =
         let e1 = Seq.head seq
         let e2 = Seq.head (Seq.skip 1 seq)
         e1, e2
+   
+let printAnswers solvePart1 e1 p1 solvePart2 e2 p2 =
+    printfn "********* Part 1 *********"
+    printfn "********* Example *********"
+    printfn $"%A{solvePart1 e1}"
+    printfn ""
+    printfn "********* Actual *********"
+    printfn $"%A{solvePart1 p1}"
+    printfn ""
     
+    printfn "********* Part 2 *********"
+    printfn "********* Example *********"
+    printfn $"%A{solvePart2 e2}"
+    printfn ""
+    printfn "********* Actual *********"
+    printfn $"%A{solvePart2 p2}"
+    printfn ""
+    
+let printAnswersWithSameInputs solve1 solve2 e1 p1 = printAnswers solve1 e1 p1 solve2 e1 p1

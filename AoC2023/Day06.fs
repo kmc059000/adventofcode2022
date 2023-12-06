@@ -32,17 +32,7 @@ let calculateNumWays (time, distance) =
     |> Seq.length
 
 let solve lineParser = parse lineParser >> Seq.map calculateNumWays >> Seq.reduce (*)
-
 let solve1 = solve parseLineAsNumbers
-
 let solve2 = solve parseLineAsSingleNumber
 
-let print1 =
-    Console.WriteLine(solve1 example1)
-    Console.WriteLine(solve1 p1)
-    ()
-   
-let print2 =
-    Console.WriteLine(solve2 example1)
-    Console.WriteLine(solve2 p1)
-    ()
+let printAnswer = printAnswersWithSameInputs solve1 solve2 example1 p1

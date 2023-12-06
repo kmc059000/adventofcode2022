@@ -15,6 +15,5 @@ open Day06
 // open Day14
 // open Day15
 // open Day18
-print1
-print2
+printAnswer
 
