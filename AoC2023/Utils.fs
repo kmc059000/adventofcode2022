@@ -107,6 +107,10 @@ module SeqExtras =
         let e1 = Seq.head seq
         let e2 = Seq.head (Seq.skip 1 seq)
         e1, e2
+        
+    let inline defaultIfEmpty<'a> (def : 'a) (s : 'a seq) = if Seq.isEmpty s then [def] |> Seq.ofList else s
+    
+    let mapFirst mapFn = Seq.mapi (fun i x -> if i = 0 then mapFn x else x)
    
 let printAnswers1 solvePart1 e1 p1 solvePart2 e2 p2 =
     printfn "********* Part 1 *********"
@@ -137,7 +141,11 @@ let printAnswersWithSameInputs2 solve1 solve2 e1 p1 = printAnswers2 solve1 e1 p1
 
 let inline defaultIfEmpty d l = if List.isEmpty l then [d] else l
 
-module Tuple2 =
+
+module TupleExtras =
+    
+    let from2 a b = a,b
+    
     let replicate x = x, x
 
     let curry f x y = f (x, y)
@@ -163,3 +171,4 @@ module Tuple2 =
         match f y with
         | Some y' -> Some (x, y')
         | None    -> None
+        
