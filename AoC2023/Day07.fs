@@ -9,20 +9,37 @@ type Hand = {
     rawHand : string
 }
 
-let valueMap = "23456789TJQKA".ToCharArray() |> Array.mapi (fun i c -> c, i) |> Map.ofArray
+let valueMap1 = "23456789TJQKA".ToCharArray() |> Array.mapi (fun i c -> c, i) |> Map.ofArray
+let valueMap2 = "J23456789TQKA".ToCharArray() |> Array.mapi (fun i c -> c, i) |> Map.ofArray
 
-let parseHand (cards: string, bid : string) =
+let parseHand (useJokers: bool) valueMap (cards: string, bid : string) =
     let values =
         cards.ToCharArray()
         |> Array.map (flip Map.find valueMap)
     
-    let rankGroups = values |> Seq.groupBy id |> Seq.map (Tuple2.mapSnd Seq.length) |> Seq.map snd |> Seq.sortByDescending id |> List.ofSeq
+    let jokerCount = values |> Seq.filter ((=) 0) |> Seq.length
+    let newJokerCount = if useJokers then jokerCount else 0
+    let exceptJokers = if useJokers then (<>) 0 else (fun _ -> true)
+    let rankGroups = values
+                     |> Seq.filter exceptJokers
+                     |> Seq.groupBy id
+                     |> Seq.map (Tuple2.mapSnd Seq.length)
+                     |> Seq.map snd
+                     |> Seq.sortByDescending id
+                     |> List.ofSeq
+                     |> defaultIfEmpty 0
+    
+    let improvedRankCounts =
+        match rankGroups with
+        | [head] -> [(head + newJokerCount)]
+        | head::tail -> head + newJokerCount :: tail
+        | _ -> failwith "todo"
     
     let handType =
-        match rankGroups with
-        | [ 5 ] -> 7
-        | [ 4; _ ] -> 6
-        | [ 3; 2 ] -> 5
+        match improvedRankCounts with
+        | 5::_ -> 7
+        | 4::_ -> 6
+        | 3::2::_ -> 5
         | 3::_ -> 4
         | 2::2::_ -> 3
         | 2::_ -> 2
@@ -30,12 +47,12 @@ let parseHand (cards: string, bid : string) =
         
     { handType = handType; values = values; bid = int bid; rawHand = cards }
      
-let parseLine line =
+let parseLine (useJokers: bool) valueMap line =
     line
     |> splitBy2 " "
-    |> parseHand
+    |> parseHand useJokers valueMap
 
-let parse = splitInputByNewLines >> Seq.map parseLine >> Seq.toList
+let parse (useJokers: bool) valueMap = splitInputByNewLines >> Seq.map (parseLine useJokers valueMap) >> Seq.toList
 
 let compareHands (h1 : Hand) (h2 : Hand) =
     match compare h1.handType h2.handType with
@@ -46,12 +63,11 @@ let solve hands =
     hands
     |> Seq.sortWith compareHands
     |> Seq.mapi (fun i h -> i + 1, h)
-    |> tapValues
     |> Seq.map (fun (rank,h) -> h.bid * rank)
     |> Seq.sum
     
 
-let solve1 = parse >> solve
-let solve2 _ = -1
+let solve1 = parse false valueMap1 >> solve
+let solve2 = parse true valueMap2 >> solve
 
 let printAnswer = printAnswersWithSameInputs solve1 solve2 example1 p1

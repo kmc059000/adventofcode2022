@@ -108,7 +108,7 @@ module SeqExtras =
         let e2 = Seq.head (Seq.skip 1 seq)
         e1, e2
    
-let printAnswers solvePart1 e1 p1 solvePart2 e2 p2 =
+let printAnswers1 solvePart1 e1 p1 solvePart2 e2 p2 =
     printfn "********* Part 1 *********"
     printfn "********* Example *********"
     printfn $"%A{solvePart1 e1}"
@@ -117,6 +117,7 @@ let printAnswers solvePart1 e1 p1 solvePart2 e2 p2 =
     printfn $"%A{solvePart1 p1}"
     printfn ""
     
+let printAnswers2 solvePart1 e1 p1 solvePart2 e2 p2 =
     printfn "********* Part 2 *********"
     printfn "********* Example *********"
     printfn $"%A{solvePart2 e2}"
@@ -125,8 +126,16 @@ let printAnswers solvePart1 e1 p1 solvePart2 e2 p2 =
     printfn $"%A{solvePart2 p2}"
     printfn ""
     
+let printAnswers solvePart1 e1 p1 solvePart2 e2 p2 =
+    printAnswers1 solvePart1 e1 p1 solvePart2 e2 p2
+    printAnswers2 solvePart1 e1 p1 solvePart2 e2 p2
+    
+    
 let printAnswersWithSameInputs solve1 solve2 e1 p1 = printAnswers solve1 e1 p1 solve2 e1 p1
+let printAnswersWithSameInputs1 solve1 solve2 e1 p1 = printAnswers1 solve1 e1 p1 solve2 e1 p1
+let printAnswersWithSameInputs2 solve1 solve2 e1 p1 = printAnswers2 solve1 e1 p1 solve2 e1 p1
 
+let inline defaultIfEmpty d l = if List.isEmpty l then [d] else l
 
 module Tuple2 =
     let replicate x = x, x
