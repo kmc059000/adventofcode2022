@@ -1776,3 +1776,17 @@ Distance:   255   1288   1117   1623"
     
     let example2 = ""
     let p2 = ""
+
+module Day07 =
+    let example1 = ""
+    let p1 = ""
+    
+    let example2 = ""
+    let p2 = ""    
+    
+module DayXX =
+    let example1 = ""
+    let p1 = ""
+    
+    let example2 = ""
+    let p2 = ""
