@@ -2786,6 +2786,13 @@ J3A33 470
     
     let example2 = ""
     let p2 = ""    
+
+module Day08 =
+    let example1 = "08"
+    let p1 = ""
+    
+    let example2 = "08"
+    let p2 = ""
     
 module DayXX =
     let example1 = ""
